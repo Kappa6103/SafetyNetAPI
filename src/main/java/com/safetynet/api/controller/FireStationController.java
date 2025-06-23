@@ -1,7 +1,6 @@
 package com.safetynet.api.controller;
 
 import com.safetynet.api.model.FireStation;
-import com.safetynet.api.model.Person;
 import com.safetynet.api.service.SafetyNetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -8,6 +8,8 @@ import com.safetynet.api.model.MedicalRecord;
 import com.safetynet.api.model.Person;
 import com.safetynet.api.repository.DataRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -161,5 +163,27 @@ public class SafetyNetService {
             }
         }
         saveMedicalRecordData(medicalRecordList);
+    }
+
+    public void findPeopleCoveredByFireStation(String station) {
+        //TODO cut the String to remove house numbers ?
+
+        List<FireStation> stations = new ArrayList<>();
+        List<Person> personAroundTheStation = new ArrayList<>();
+
+        for (FireStation fireStation : fireStationList) {
+            if (fireStation.getStation().equals(station)) {
+                stations.add(fireStation);
+            }
+        }
+
+        for (Person person : personList) {
+            for (FireStation fireStation : stations) {
+                if (person.getAddress().equals(fireStation.getAddress())) {
+                    personAroundTheStation.add(person);
+                }
+            }
+        }
+
     }
 }

@@ -4,12 +4,13 @@ import com.safetynet.api.model.DataWrapper;
 import com.safetynet.api.model.FireStation;
 import com.safetynet.api.model.MedicalRecord;
 import com.safetynet.api.model.Person;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Component
 public class DataExtractionUtil {
 
     private final List<Person> listOfPersons = new ArrayList<>();

@@ -3,6 +3,8 @@ package com.safetynet.api.service;
 // IMPLEMENTATION DES TRAITEMENTS METIERS SPECIFIQUES A L'APPLICATION
 
 import com.safetynet.api.model.*;
+import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
+import com.safetynet.api.model.DTO.PersonLightDTO;
 import com.safetynet.api.repository.DataRepository;
 import com.safetynet.api.util.CalculUtil;
 import com.safetynet.api.util.DataExtractionUtil;
@@ -23,9 +25,6 @@ public class GeneralPurposeService {
     CalculUtil calculUtil;
 
     @Autowired
-    PayLoadOneDTO payLoad;
-
-    @Autowired
     private DataExtractionUtil dataExtractionUtil;
 
     private DataWrapper dataWrapper;
@@ -44,26 +43,13 @@ public class GeneralPurposeService {
         medicalRecordList = dataExtractionUtil.getListOfMedicalRecords(dataWrapper);
     }
 
-    public PayLoadOneDTO findPeopleCoveredByFireStation(String station) {
-        //TODO cut the String to remove house numbers ?
-
-        //TODO Cette url doit retourner une liste des personnes couvertes par la caserne de pompiers
-        //correspondante.
-        // Donc, si le numéro de station = 1, elle doit renvoyer les habitants
-        //couverts par la station numéro 1.
-        // La liste doit inclure les informations spécifiques
-        //suivantes : prénom, nom, adresse, numéro de téléphone.
-        // De plus, elle doit fournir un
-        //décompte du nombre d'adultes et du nombre d'enfants (tout individu âgé de 18 ans ou
-        //moins) dans la zone desservie
+    public PeopleCoveredByFireStationDTO findPeopleCoveredByFireStation(String station) {
 
         List<FireStation> stationsSelected = new ArrayList<>();
 
         List<Person> personAroundTheStation = new ArrayList<>();
 
         List<PersonLightDTO> personLightDTOList = new ArrayList<>();
-
-        payLoad.reset();
 
         for (FireStation fireStation : fireStationList) {
             if (fireStation.getStation().equals(station)) {
@@ -88,15 +74,17 @@ public class GeneralPurposeService {
             personLightDTOList.add(personLightDTO);
         }
 
+
+        int numberOfAdult = 0;
+        int numberOfChild = 0;
         for (PersonLightDTO personLightDTO : personLightDTOList) {
-            payLoad.addAPersonLightDTO(personLightDTO);
             if (calculUtil.isThisPersonAnAdult(personLightDTO, medicalRecordList)) {
-                payLoad.incrementAdult();
+                numberOfAdult += 1;
             } else {
-                payLoad.incrementChild();
+                numberOfChild += 1;
             }
         }
-        return payLoad;
+        return new PeopleCoveredByFireStationDTO(personLightDTOList, numberOfAdult, numberOfChild);
     }
 
 }

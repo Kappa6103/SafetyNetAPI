@@ -1,4 +1,4 @@
-package com.safetynet.api.model;
+package com.safetynet.api.model.DTO;
 
 import lombok.Data;
 

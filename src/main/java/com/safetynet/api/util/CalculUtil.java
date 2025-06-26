@@ -1,7 +1,7 @@
 package com.safetynet.api.util;
 
 import com.safetynet.api.model.MedicalRecord;
-import com.safetynet.api.model.PersonLightDTO;
+import com.safetynet.api.model.DTO.PersonLightDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -12,6 +12,7 @@ import java.util.List;
 
 @Component
 public class CalculUtil {
+
     public boolean isThisPersonAnAdult(PersonLightDTO personLightDTO, List<MedicalRecord> medicalRecordList) {
         boolean result = false;
         LocalDate nowTime = LocalDate.now();

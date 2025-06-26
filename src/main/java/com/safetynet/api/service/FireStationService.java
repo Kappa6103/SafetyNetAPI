@@ -2,7 +2,6 @@ package com.safetynet.api.service;
 
 import com.safetynet.api.model.*;
 import com.safetynet.api.repository.DataRepository;
-import com.safetynet.api.util.CalculUtil;
 import com.safetynet.api.util.DataExtractionUtil;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,9 @@ public class FireStationService {
     @Autowired
     private DataExtractionUtil dataExtractionUtil;
 
-    private DataWrapper dataWrapper;
-
     private List<FireStation> fireStationList;
+
+    private DataWrapper dataWrapper;
 
     @PostConstruct
     private void init() {

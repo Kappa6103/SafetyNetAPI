@@ -1,6 +1,6 @@
 package com.safetynet.api.controller;
 
-import com.safetynet.api.model.PayLoadOneDTO;
+import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
 import com.safetynet.api.service.GeneralPurposeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,7 @@ public class GeneralPurposeController {
     GeneralPurposeService generalPurposeService;
 
     @GetMapping(value = "/firestation", params = "stationNumber")
-    public PayLoadOneDTO peopleCoveredByFireStation(
+    public PeopleCoveredByFireStationDTO peopleCoveredByFireStation(
             @RequestParam(value = "stationNumber") String station) {
         return generalPurposeService.findPeopleCoveredByFireStation(station);
     }

@@ -1,7 +1,8 @@
 package com.safetynet.api.controller;
 
 import com.safetynet.api.model.FireStation;
-import com.safetynet.api.service.SafetyNetService;
+import com.safetynet.api.service.FireStationService;
+import com.safetynet.api.service.GeneralPurposeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 public class FireStationController {
 
     @Autowired
-    SafetyNetService safetyNetService;
+    FireStationService fireStationService;
 
     @GetMapping
     public FireStation greeting() {
-        return safetyNetService.testMethodFireStation();
+        return fireStationService.testMethodFireStation();
     }
 
     @PostMapping
@@ -22,7 +23,7 @@ public class FireStationController {
             @RequestParam(value = "address") String address,
             @RequestParam(value = "station") String station
     ) {
-        safetyNetService.addFireStation(address, station);
+        fireStationService.addFireStation(address, station);
     }
 
     @PutMapping
@@ -30,7 +31,7 @@ public class FireStationController {
             @RequestParam(value = "address") String address,
             @RequestParam(value = "station") String station
     ) {
-        safetyNetService.updateFireStation(address, station);
+        fireStationService.updateFireStation(address, station);
     }
 
     @DeleteMapping
@@ -38,8 +39,7 @@ public class FireStationController {
             @RequestParam(value = "address") String address,
             @RequestParam(value = "station") String station
     ) {
-        safetyNetService.deleteStation(address, station);
+        fireStationService.deleteStation(address, station);
     }
-
 
 }

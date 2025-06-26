@@ -1,6 +1,7 @@
 package com.safetynet.api.controller;
 
-import com.safetynet.api.service.SafetyNetService;
+import com.safetynet.api.service.FireStationService;
+import com.safetynet.api.service.GeneralPurposeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,7 +19,7 @@ public class FireStationControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private SafetyNetService safetyNetService;
+    private FireStationService fireStationService;
 
     @Test
     public void testGetFireStation() throws Exception {

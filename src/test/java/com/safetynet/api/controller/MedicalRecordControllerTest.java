@@ -1,6 +1,8 @@
 package com.safetynet.api.controller;
 
-import com.safetynet.api.service.SafetyNetService;
+import com.safetynet.api.service.FireStationService;
+import com.safetynet.api.service.GeneralPurposeService;
+import com.safetynet.api.service.MedicalRecordService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,7 +20,7 @@ public class MedicalRecordControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private SafetyNetService safetyNetService;
+    private MedicalRecordService medicalRecordService;
 
     @Test
     public void testGetMedicalRecord() throws Exception {

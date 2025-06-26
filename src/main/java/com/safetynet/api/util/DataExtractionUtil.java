@@ -1,4 +1,4 @@
-package com.safetynet.api.service;
+package com.safetynet.api.util;
 
 import com.safetynet.api.model.DataWrapper;
 import com.safetynet.api.model.FireStation;
@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class DataExtraction {
-
-    private final DataWrapper dataWrapper;
+public class DataExtractionUtil {
 
     private final List<Person> listOfPersons = new ArrayList<>();
 
@@ -20,25 +18,22 @@ public class DataExtraction {
 
     private final List<MedicalRecord> listOfMedicalRecords = new ArrayList<>();
 
-    public DataExtraction(DataWrapper dataWrapper) {
-        this.dataWrapper = dataWrapper;
-    }
 
-    public List<Person> getListOfPersons() {
+    public List<Person> getListOfPersons(DataWrapper dataWrapper) {
         for (Person person : dataWrapper.getPersonIterable()) {
             listOfPersons.add(person);
         }
         return listOfPersons;
     }
 
-    public List<FireStation> getListOfFireStations() {
+    public List<FireStation> getListOfFireStations(DataWrapper dataWrapper) {
         for (FireStation fireStation : dataWrapper.getFireStationIterable()) {
             listOfFireStations.add(fireStation);
         }
         return listOfFireStations;
     }
 
-    public List<MedicalRecord> getListOfMedicalRecords() {
+    public List<MedicalRecord> getListOfMedicalRecords(DataWrapper dataWrapper) {
         for (MedicalRecord medicalRecord : dataWrapper.getMedicalRecordIterable()) {
             listOfMedicalRecords.add(medicalRecord);
         }

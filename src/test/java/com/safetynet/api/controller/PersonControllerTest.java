@@ -3,7 +3,8 @@ package com.safetynet.api.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.safetynet.api.service.SafetyNetService;
+import com.safetynet.api.service.GeneralPurposeService;
+import com.safetynet.api.service.PersonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,7 +19,7 @@ public class PersonControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private SafetyNetService safetyNetService;
+    private PersonService personService;
 
     @Test
     public void testGetPerson() throws Exception {

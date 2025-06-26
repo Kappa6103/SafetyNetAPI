@@ -1,7 +1,7 @@
 package com.safetynet.api.controller;
 
 import com.safetynet.api.model.Person;
-import com.safetynet.api.service.SafetyNetService;
+import com.safetynet.api.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 public class PersonController {
 
     @Autowired
-    SafetyNetService safetyNetService;
+    PersonService personService;
 
     @GetMapping
     public Person greeting() {
-        return safetyNetService.testMethodPerson();
+        return personService.testMethodPerson();
     }
 
     @PostMapping
@@ -28,7 +28,7 @@ public class PersonController {
             @RequestParam(value = "phone") String phone,
             @RequestParam(value = "email") String email
             ) {
-        safetyNetService.addPerson(firstName, lastName, address, city, zip, phone, email);
+        personService.addPerson(firstName, lastName, address, city, zip, phone, email);
     }
 
     //TODO update just one field ?
@@ -42,7 +42,7 @@ public class PersonController {
             @RequestParam(value = "phone") String phone,
             @RequestParam(value = "email") String email
             ) {
-        safetyNetService.updatePerson(firstName, lastName, address, city, zip, phone, email);
+        personService.updatePerson(firstName, lastName, address, city, zip, phone, email);
     }
 
     @DeleteMapping
@@ -50,7 +50,7 @@ public class PersonController {
             @RequestParam(value = "firstName") String firstName,
             @RequestParam(value = "lastName") String lastName
             ) {
-        safetyNetService.deletePerson(firstName, lastName);
+        personService.deletePerson(firstName, lastName);
     }
 
 }

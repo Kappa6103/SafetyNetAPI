@@ -10,16 +10,12 @@ import java.io.IOException;
 @Repository
 public class DataRepository {
 
-    //TODO : Should be @Autowired injection !
-    private DataWrapper dataWrapper;
-
-    //TODO : should be a singleton ?
-
     ObjectMapper objectMapper = new ObjectMapper();
+
+    DataWrapper dataWrapper;
 
     //TODO: pass the json file path as an argument ?
     public DataWrapper getDataWrapper() {
-
         try {
             dataWrapper = objectMapper.readValue(new File("src/main/resources/data.json"), DataWrapper.class);
         } catch (IOException e) {

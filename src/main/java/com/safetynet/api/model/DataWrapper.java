@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 // IMPLEMENTATION DES OBJETS METIERS QUI SERONT MANIPULES PAR LES AUTRES COUCHES
 @Data
-@Component
 public class DataWrapper {
     //TODO singleton class ?
 

@@ -2,15 +2,18 @@ package com.safetynet.api.service;
 
 // IMPLEMENTATION DES TRAITEMENTS METIERS SPECIFIQUES A L'APPLICATION
 
-import com.safetynet.api.model.DataWrapper;
-import com.safetynet.api.model.FireStation;
-import com.safetynet.api.model.MedicalRecord;
-import com.safetynet.api.model.Person;
+import com.safetynet.api.model.*;
 import com.safetynet.api.repository.DataRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
 
 
 @Service
@@ -22,7 +25,9 @@ public class SafetyNetService {
 
     DataExtraction dataExtraction = new DataExtraction(dataWrapper);
 
-    // NOT DRY - > SAME CODE AS DATA EXTRACTION
+    @Autowired
+    PayLoadOneDTO payLoad;
+
     private final List<Person> personList = dataExtraction.getListOfPersons();
 
     private final List<FireStation> fireStationList = dataExtraction.getListOfFireStations();
@@ -165,25 +170,84 @@ public class SafetyNetService {
         saveMedicalRecordData(medicalRecordList);
     }
 
-    public void findPeopleCoveredByFireStation(String station) {
+    public PayLoadOneDTO findPeopleCoveredByFireStation(String station) {
         //TODO cut the String to remove house numbers ?
 
-        List<FireStation> stations = new ArrayList<>();
+        //TODO Cette url doit retourner une liste des personnes couvertes par la caserne de pompiers
+        //correspondante.
+        // Donc, si le numéro de station = 1, elle doit renvoyer les habitants
+        //couverts par la station numéro 1.
+        // La liste doit inclure les informations spécifiques
+        //suivantes : prénom, nom, adresse, numéro de téléphone.
+        // De plus, elle doit fournir un
+        //décompte du nombre d'adultes et du nombre d'enfants (tout individu âgé de 18 ans ou
+        //moins) dans la zone desservie
+
+        List<FireStation> stationsSelected = new ArrayList<>();
+
         List<Person> personAroundTheStation = new ArrayList<>();
+
+        List<PersonLightDTO> personLightDTOList = new ArrayList<>();
+
+        payLoad.reset();
 
         for (FireStation fireStation : fireStationList) {
             if (fireStation.getStation().equals(station)) {
-                stations.add(fireStation);
+                stationsSelected.add(fireStation);
             }
         }
 
         for (Person person : personList) {
-            for (FireStation fireStation : stations) {
+            for (FireStation fireStation : stationsSelected) {
                 if (person.getAddress().equals(fireStation.getAddress())) {
                     personAroundTheStation.add(person);
                 }
             }
         }
 
+        for (Person person : personAroundTheStation) {
+            PersonLightDTO personLightDTO = new PersonLightDTO();
+            personLightDTO.setFirstName(person.getFirstName());
+            personLightDTO.setLastName(person.getLastName());
+            personLightDTO.setAddress(person.getAddress());
+            personLightDTO.setPhoneNumber(person.getPhone());
+            personLightDTOList.add(personLightDTO);
+        }
+
+        for (PersonLightDTO personLightDTO : personLightDTOList) {
+            payLoad.addAPersonLightDTO(personLightDTO);
+            if (isThisPersonAnAdult(personLightDTO)) {
+                payLoad.incrementAdult();
+            } else {
+                payLoad.incrementChild();
+            }
+        }
+        return payLoad;
+    }
+
+    //Class util (CalculUtil par exemple) - comme le reste des calcul
+    private boolean isThisPersonAnAdult(PersonLightDTO personLightDTO) {
+        boolean result = false;
+        LocalDate nowTime = LocalDate.now();
+        LocalDate dateOfBirth = null;
+        Period period;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        //better to do a fori loop with a break ?
+        for (MedicalRecord medicalRecord : medicalRecordList) {
+            if (personLightDTO.getFirstName().equals(medicalRecord.getFirstName()) && personLightDTO.getLastName().equals(medicalRecord.getLastName())) {
+                try {
+                    dateOfBirth = LocalDate.parse(medicalRecord.getBirthdate(), formatter);
+                } catch (DateTimeParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (dateOfBirth != null) {
+            period = Period.between(dateOfBirth, nowTime);
+
+            result = period.getYears() >= 18;
+        }
+        return result;
     }
 }

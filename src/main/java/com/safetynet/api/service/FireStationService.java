@@ -1,9 +1,6 @@
 package com.safetynet.api.service;
 
 import com.safetynet.api.model.*;
-import com.safetynet.api.repository.DataRepository;
-import com.safetynet.api.util.DataExtractionUtil;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,31 +10,13 @@ import java.util.List;
 public class FireStationService {
 
     @Autowired
-    DataRepository dataRepository;
+    DataWrapper dataWrapper;
 
     @Autowired
-    private DataExtractionUtil dataExtractionUtil;
-
     private List<FireStation> fireStationList;
-
-    private DataWrapper dataWrapper;
-
-    @PostConstruct
-    private void init() {
-        dataWrapper = dataRepository.getDataWrapper();
-        fireStationList = dataExtractionUtil.getListOfFireStations(dataWrapper);
-    }
 
     public FireStation testMethodFireStation() {
         return fireStationList.getLast();
-    }
-
-    public void saveFireStationData(List<FireStation> fireStationList) {
-
-        dataWrapper.setFireStationIterable(fireStationList);
-
-        dataRepository.writeDataWrapper(dataWrapper);
-
     }
 
     public void addFireStation(String address, String station) {
@@ -46,7 +25,7 @@ public class FireStationService {
 
         fireStationList.add(fireStation);
 
-        saveFireStationData(fireStationList);
+        dataWrapper.setFireStations(fireStationList);
     }
 
     public void updateFireStation(String address, String station) {
@@ -55,7 +34,7 @@ public class FireStationService {
                 fireStation.setStation(station);
             }
         }
-        saveFireStationData(fireStationList);
+        dataWrapper.setFireStations(fireStationList);
     }
 
     public void deleteStation(String address, String station) {
@@ -66,8 +45,7 @@ public class FireStationService {
                 break;
             }
         }
-        saveFireStationData(fireStationList);
+        dataWrapper.setFireStations(fireStationList);
     }
-
 
 }

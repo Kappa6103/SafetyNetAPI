@@ -2,8 +2,6 @@ package com.safetynet.api.service;
 
 import com.safetynet.api.model.*;
 import com.safetynet.api.repository.DataRepository;
-import com.safetynet.api.util.DataExtractionUtil;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,31 +11,13 @@ import java.util.List;
 public class PersonService {
 
     @Autowired
-    DataRepository dataRepository;
+    DataWrapper dataWrapper;
 
     @Autowired
-    private DataExtractionUtil dataExtractionUtil;
-
-    private DataWrapper dataWrapper;
-
     private List<Person> personList;
-
-    @PostConstruct
-    private void init() {
-        dataWrapper = dataRepository.getDataWrapper();
-        personList = dataExtractionUtil.getListOfPersons(dataWrapper);
-    }
 
     public Person testMethodPerson() {
         return personList.getLast();
-    }
-
-    public void savePersonData(List<Person> personList) {
-
-        dataWrapper.setPersonIterable(personList);
-
-        dataRepository.writeDataWrapper(dataWrapper);
-
     }
 
     public void addPerson(
@@ -46,7 +26,8 @@ public class PersonService {
 
         personList.add(newPerson);
 
-        savePersonData(personList);
+        dataWrapper.setPersons(personList);
+
     }
 
     public void updatePerson(
@@ -60,7 +41,7 @@ public class PersonService {
                 person.setEmail(email);
             }
         }
-        savePersonData(personList);
+        dataWrapper.setPersons(personList);
     }
 
     public void deletePerson(String firstName, String lastName) {
@@ -71,7 +52,7 @@ public class PersonService {
                 break;
             }
         }
-        savePersonData(personList);
+        dataWrapper.setPersons(personList);
     }
 
 }

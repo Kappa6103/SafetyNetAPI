@@ -1,10 +1,6 @@
 package com.safetynet.api.service;
 
 import com.safetynet.api.model.*;
-import com.safetynet.api.repository.DataRepository;
-import com.safetynet.api.util.CalculUtil;
-import com.safetynet.api.util.DataExtractionUtil;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,33 +10,20 @@ import java.util.List;
 public class MedicalRecordService {
 
     @Autowired
-    DataRepository dataRepository;
+    DataWrapper dataWrapper;
 
     @Autowired
-    private DataExtractionUtil dataExtractionUtil;
-
-    private DataWrapper dataWrapper;
-
     private List<MedicalRecord> medicalRecordList;
 
-    @PostConstruct
-    private void init() {
-        dataWrapper = dataRepository.getDataWrapper();
-        medicalRecordList = dataExtractionUtil.getListOfMedicalRecords(dataWrapper);
-    }
-
-
+    //TODO some logging maybe ?
+//    @PostConstruct
+//    private void init() {
+//        dataWrapper = dataRepository.getDataWrapper();
+//        medicalRecordList = dataExtractionUtil.getListOfMedicalRecords(dataWrapper);
+//    }
 
     public MedicalRecord testMethodMedicalRecord() {
         return medicalRecordList.getLast();
-    }
-
-    public void saveMedicalRecordData(List<MedicalRecord> medicalRecordList) {
-
-        dataWrapper.setMedicalRecordIterable(medicalRecordList);
-
-        dataRepository.writeDataWrapper(dataWrapper);
-
     }
 
     public void addMedicalRecord(
@@ -50,7 +33,7 @@ public class MedicalRecordService {
 
         medicalRecordList.add(medicalRecord);
 
-        saveMedicalRecordData(medicalRecordList);
+        dataWrapper.setMedicalRecords(medicalRecordList);
     }
 
     //TODO not updating the existing strings in the List<String> for medication and allergies.
@@ -64,7 +47,7 @@ public class MedicalRecordService {
                 medicalRecord.setAllergies(allergies);
             }
         }
-        saveMedicalRecordData(medicalRecordList);
+        dataWrapper.setMedicalRecords(medicalRecordList);
     }
 
     public void deleteMedicalRecord(String firstName, String lastName) {
@@ -76,7 +59,7 @@ public class MedicalRecordService {
                 break;
             }
         }
-        saveMedicalRecordData(medicalRecordList);
+        dataWrapper.setMedicalRecords(medicalRecordList);
     }
 
 }

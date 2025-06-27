@@ -5,18 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 // IMPLEMENTATION DES OBJETS METIERS QUI SERONT MANIPULES PAR LES AUTRES COUCHES
 @Data
 public class DataWrapper {
-    //TODO singleton class ?
 
     @JsonProperty("persons")
-    private Iterable<Person> personIterable;
+    private List<Person> persons;
 
     @JsonProperty("firestations")
-    private Iterable<FireStation> fireStationIterable;
+    private List<FireStation> fireStations;
 
     @JsonProperty("medicalrecords")
-    private Iterable<MedicalRecord> medicalRecordIterable;
+    private List<MedicalRecord> medicalRecords;
 
 }

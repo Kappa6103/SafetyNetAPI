@@ -5,10 +5,7 @@ package com.safetynet.api.service;
 import com.safetynet.api.model.*;
 import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
 import com.safetynet.api.model.DTO.PersonLightDTO;
-import com.safetynet.api.repository.DataRepository;
 import com.safetynet.api.util.CalculUtil;
-import com.safetynet.api.util.DataExtractionUtil;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,29 +16,16 @@ import java.util.List;
 public class GeneralPurposeService {
 
     @Autowired
-    DataRepository dataRepository;
-
-    @Autowired
     CalculUtil calculUtil;
 
     @Autowired
-    private DataExtractionUtil dataExtractionUtil;
-
-    private DataWrapper dataWrapper;
-
     private List<Person> personList;
 
+    @Autowired
     private List<FireStation> fireStationList;
 
+    @Autowired
     private List<MedicalRecord> medicalRecordList;
-
-    @PostConstruct
-    private void init() {
-        dataWrapper = dataRepository.getDataWrapper();
-        personList = dataExtractionUtil.getListOfPersons(dataWrapper);
-        fireStationList = dataExtractionUtil.getListOfFireStations(dataWrapper);
-        medicalRecordList = dataExtractionUtil.getListOfMedicalRecords(dataWrapper);
-    }
 
     public PeopleCoveredByFireStationDTO findPeopleCoveredByFireStation(String station) {
 

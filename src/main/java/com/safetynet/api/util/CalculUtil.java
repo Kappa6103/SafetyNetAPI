@@ -2,6 +2,7 @@ package com.safetynet.api.util;
 
 import com.safetynet.api.model.MedicalRecord;
 import com.safetynet.api.model.DTO.PersonLightDTO;
+import com.safetynet.api.model.Person;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -32,8 +33,53 @@ public class CalculUtil {
         if (dateOfBirth != null) {
             period = Period.between(dateOfBirth, nowTime);
 
-            result = period.getYears() >= 18;
+            result = period.getYears() > 18;
         }
         return result;
+    }
+
+    public boolean isThisPersonAChild(Person person, MedicalRecord medicalRecord) {
+        boolean result = false;
+        LocalDate nowTime = LocalDate.now();
+        LocalDate dateOfBirth = null;
+        Period period;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+        try {
+            dateOfBirth = LocalDate.parse(medicalRecord.getBirthdate(), formatter);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+        }
+
+        if (dateOfBirth != null) {
+            period = Period.between(dateOfBirth, nowTime);
+
+            result = period.getYears() <= 18;
+        }
+        return result;
+    }
+
+    public int calulateAge(Person person, MedicalRecord medicalRecord) {
+        int result = 0;
+        LocalDate nowTime = LocalDate.now();
+        LocalDate dateOfBirth = null;
+        Period period = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+        try {
+            dateOfBirth = LocalDate.parse(medicalRecord.getBirthdate(), formatter);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+        }
+
+        if (dateOfBirth != null) {
+            period = Period.between(dateOfBirth, nowTime);
+        }
+
+        if (period != null) {
+            return period.getYears();
+        } else {
+            return -1;
+        }
     }
 }

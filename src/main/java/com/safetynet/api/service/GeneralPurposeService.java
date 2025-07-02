@@ -3,6 +3,7 @@ package com.safetynet.api.service;
 // IMPLEMENTATION DES TRAITEMENTS METIERS SPECIFIQUES A L'APPLICATION
 
 import com.safetynet.api.model.*;
+import com.safetynet.api.model.DTO.ChildDTO;
 import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
 import com.safetynet.api.model.DTO.PersonLightDTO;
 import com.safetynet.api.util.CalculUtil;
@@ -58,7 +59,6 @@ public class GeneralPurposeService {
             personLightDTOList.add(personLightDTO);
         }
 
-
         int numberOfAdult = 0;
         int numberOfChild = 0;
         for (PersonLightDTO personLightDTO : personLightDTOList) {
@@ -71,4 +71,62 @@ public class GeneralPurposeService {
         return new PeopleCoveredByFireStationDTO(personLightDTOList, numberOfAdult, numberOfChild);
     }
 
+    public List<ChildDTO> findChildAtAddress(String address) {
+        List<Person> peopleAtAddress = new ArrayList<>();
+        List<Person> peopleAtAddressThatAreChild = new ArrayList<>();
+        List<ChildDTO> childDTOS = new ArrayList<>();
+
+        for (Person person : personList) {
+            if (person.getAddress().equals(address)) {
+                peopleAtAddress.add(person);
+            }
+        }
+
+        for (Person person : peopleAtAddress) {
+            for (MedicalRecord medicalRecord : medicalRecordList) {
+                if (person.getFirstName().equals(medicalRecord.getFirstName())
+                        && person.getLastName().equals(medicalRecord.getLastName())
+                        && calculUtil.isThisPersonAChild(person, medicalRecord)
+                ) {
+                    ChildDTO childDTO = new ChildDTO();
+                    childDTO.setFirstName(person.getFirstName());
+                    childDTO.setLastName(person.getLastName());
+                    childDTO.setAge(calculUtil.calulateAge(person, medicalRecord));
+                    List<Person> personAtAddressMinusTheChild = new ArrayList<>();
+                    for (Person person2 : peopleAtAddress) {
+                        if (person2.getFirstName().equals(person.getFirstName()) && person2.getLastName().equals(person.getLastName())) {
+                            continue;
+                        } else {
+                            personAtAddressMinusTheChild.add(person2);
+                        }
+                    }
+                    childDTO.setOtherFamilyMember(personAtAddressMinusTheChild);
+                    childDTOS.add(childDTO);
+                }
+            }
+        }
+
+
+    return childDTOS;
+    }
+
+    public List<String> findPhoneNumbersCoveredByFireStation(String firestationNumber) {
+        List<FireStation> fireStationsAreNumber = new ArrayList<>();
+        List<String> phoneNumbers = new ArrayList<>();
+
+        for (FireStation fireStation : fireStationList) {
+            if (fireStation.getStation().equals(firestationNumber)) {
+                fireStationsAreNumber.add(fireStation);
+            }
+        }
+
+        for (FireStation fireStation : fireStationsAreNumber) {
+            for (Person person : personList) {
+                if (person.getAddress().equals(fireStation.getAddress())) {
+                    phoneNumbers.add(person.getPhone());
+                }
+            }
+        }
+        return phoneNumbers;
+    }
 }

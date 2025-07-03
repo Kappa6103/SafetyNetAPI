@@ -2,13 +2,15 @@ package com.safetynet.api.model.DTO;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class inhabitantDTO {
+public class InhabitantDTO {
     private String firstName;
     private String lastName;
-    private int age;
-    private int fireStation;
     private String phoneNumber;
-
+    private int age;
+    private List<String> medications;
+    private List<String> allergies;
 
 }

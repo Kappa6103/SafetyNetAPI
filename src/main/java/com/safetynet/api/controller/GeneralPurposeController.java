@@ -1,7 +1,9 @@
 package com.safetynet.api.controller;
 
 import com.safetynet.api.model.DTO.ChildDTO;
+import com.safetynet.api.model.DTO.DetailListOfInhabitantsDTO;
 import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
+import com.safetynet.api.model.DTO.InhabitantDTO;
 import com.safetynet.api.service.GeneralPurposeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +37,7 @@ public class GeneralPurposeController {
     }
 
     @GetMapping(value = "/fire", params = "address")
-    public List<inhabitantDTO> getAllDetailOfInhabitantsAtAddress (
+    public DetailListOfInhabitantsDTO getAllDetailOfInhabitantsAtAddress (
             @RequestParam(value = "address") String address) {
         return generalPurposeService.getDetailListOfInhabitants(address);
     }

@@ -3,9 +3,7 @@ package com.safetynet.api.service;
 // IMPLEMENTATION DES TRAITEMENTS METIERS SPECIFIQUES A L'APPLICATION
 
 import com.safetynet.api.model.*;
-import com.safetynet.api.model.DTO.ChildDTO;
-import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
-import com.safetynet.api.model.DTO.PersonLightDTO;
+import com.safetynet.api.model.DTO.*;
 import com.safetynet.api.util.CalculUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -128,5 +126,56 @@ public class GeneralPurposeService {
             }
         }
         return phoneNumbers;
+    }
+
+    public DetailListOfInhabitantsDTO getDetailListOfInhabitants(String address) {
+        int stationNumber = -1;
+        List<Person> peopleLivingAtAddress = new ArrayList<>();
+        List<InhabitantDTO> inhabitantDTOList = new ArrayList<>();
+
+        for(Person person : personList) {
+            if (person.getAddress().equals(address)) {
+                peopleLivingAtAddress.add(person);
+            }
+        }
+        for (FireStation fireStation : fireStationList) {
+            if (fireStation.getAddress().equals(address)) {
+                stationNumber = Integer.parseInt(fireStation.getStation());
+            }
+        }
+
+        for(Person person : peopleLivingAtAddress) {
+            InhabitantDTO inhabitantDTO = new InhabitantDTO();
+            inhabitantDTO.setFirstName(person.getFirstName());
+            inhabitantDTO.setLastName(person.getLastName());
+            inhabitantDTO.setPhoneNumber(person.getPhone());
+            inhabitantDTO.setAge(calculUtil.calulateAge(person, medicalRecordList));
+            inhabitantDTO.setMedications(fetchMedication(person));
+            inhabitantDTO.setAllergies(fetchAllergies(person));
+            inhabitantDTOList.add(inhabitantDTO);
+        }
+
+        return new DetailListOfInhabitantsDTO(inhabitantDTOList, stationNumber);
+
+    }
+    private List<String> fetchMedication(Person person) {
+        List<String> result = null;
+        for (MedicalRecord medicalRecord : medicalRecordList) {
+            if (medicalRecord.getFirstName().equals(person.getFirstName())
+                    && medicalRecord.getLastName().equals(person.getLastName())) {
+                result = medicalRecord.getMedications();
+            }
+        }
+        return result;
+    }
+    private List<String> fetchAllergies(Person person) {
+        List<String> result = null;
+        for (MedicalRecord medicalRecord : medicalRecordList) {
+            if (medicalRecord.getFirstName().equals(person.getFirstName())
+                    && medicalRecord.getLastName().equals(person.getLastName())) {
+                result = medicalRecord.getAllergies();
+            }
+        }
+        return result;
     }
 }

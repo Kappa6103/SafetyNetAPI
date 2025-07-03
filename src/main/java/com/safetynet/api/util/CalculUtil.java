@@ -82,4 +82,27 @@ public class CalculUtil {
             return -1;
         }
     }
+
+    public int calulateAge(Person person, List<MedicalRecord> medicalRecordList) {
+        LocalDate nowTime = LocalDate.now();
+        LocalDate dateOfBirth = null;
+        Period period = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        //better to do a fori loop with a break ?
+        for (MedicalRecord medicalRecord : medicalRecordList) {
+            if (person.getFirstName().equals(medicalRecord.getFirstName()) && person.getLastName().equals(medicalRecord.getLastName())) {
+                try {
+                    dateOfBirth = LocalDate.parse(medicalRecord.getBirthdate(), formatter);
+                } catch (DateTimeParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (dateOfBirth != null) {
+            period = Period.between(dateOfBirth, nowTime);
+
+        }
+        return period.getYears();
+    }
+
 }

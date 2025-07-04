@@ -1,13 +1,14 @@
 package com.safetynet.api.controller;
 
 import com.safetynet.api.model.MedicalRecord;
-import com.safetynet.api.service.GeneralPurposeService;
 import com.safetynet.api.service.MedicalRecordService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/medicalRecord")
 public class MedicalRecordController {
@@ -15,9 +16,14 @@ public class MedicalRecordController {
     @Autowired
     MedicalRecordService medicalRecordService;
 
+    //TODO out of the exercise's scope
     @GetMapping
     public MedicalRecord greeting() {
-        return medicalRecordService.testMethodMedicalRecord();
+        MedicalRecord medicalRecord = medicalRecordService.testMethodMedicalRecord();
+        log.info(
+                "@GetMapping reached in the MedicalRecordController. Getting the last medical record in the list: {} {}"
+                ,medicalRecord.getFirstName(), medicalRecord.getLastName());
+        return medicalRecord;
     }
 
     @PostMapping
@@ -29,6 +35,8 @@ public class MedicalRecordController {
             @RequestParam(value = "allergies") List<String> allergies
     ) {
         medicalRecordService.addMedicalRecord(firstName, lastName, birthday, medications, allergies);
+        log.info("@PostMapping reached in the MedicalRecordController." +
+                "Adding a medical record for {} {}", firstName, lastName);
     }
 
     @PutMapping
@@ -40,6 +48,8 @@ public class MedicalRecordController {
             @RequestParam(value = "allergies") List<String> allergies
     ) {
         medicalRecordService.updateMedicalRecord(firstName, lastName, birthday, medications, allergies);
+        log.info("@PutMapping reached in the MedicalRecordController" +
+                "Updating the medical record of {} {}", firstName, lastName);
     }
 
     @DeleteMapping
@@ -48,6 +58,8 @@ public class MedicalRecordController {
             @RequestParam(value = "lastName") String lastName
     ) {
         medicalRecordService.deleteMedicalRecord(firstName, lastName);
+        log.info("@DeleteMapping reached in the MedicalRecordController" +
+                "Deleting the medical record of {} {}", firstName, lastName);
     }
 
 }

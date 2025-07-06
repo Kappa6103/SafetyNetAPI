@@ -1,16 +1,16 @@
 package com.safetynet.api.service;
 
-// IMPLEMENTATION DES TRAITEMENTS METIERS SPECIFIQUES A L'APPLICATION
-
 import com.safetynet.api.model.*;
 import com.safetynet.api.model.DTO.*;
 import com.safetynet.api.util.CalculUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Service
 public class GeneralPurposeService {
 
@@ -35,8 +35,10 @@ public class GeneralPurposeService {
         List<PersonLightDTO> personLightDTOList = new ArrayList<>();
 
         for (FireStation fireStation : fireStationList) {
-            if (fireStation.getStation().equals(station)) {
+            if (fireStation.getStation().equals(station)) { //TODO Yoda writing or Objets.equals()
                 stationsSelected.add(fireStation);
+                log.debug("Adding {} to the list of filtered station, the filter is the number {}",
+                        fireStation, station);
             }
         }
 
@@ -44,6 +46,8 @@ public class GeneralPurposeService {
             for (FireStation fireStation : stationsSelected) {
                 if (person.getAddress().equals(fireStation.getAddress())) {
                     personAroundTheStation.add(person);
+                    log.debug("Adding {} {} to the list of people covered by the selected stations",
+                            person.getFirstName(), person.getLastName());
                 }
             }
         }
@@ -55,6 +59,7 @@ public class GeneralPurposeService {
             personLightDTO.setAddress(person.getAddress());
             personLightDTO.setPhoneNumber(person.getPhone());
             personLightDTOList.add(personLightDTO);
+            log.debug("Creating a personLightDTO with the person {}", person);
         }
 
         int numberOfAdult = 0;
@@ -62,24 +67,33 @@ public class GeneralPurposeService {
         for (PersonLightDTO personLightDTO : personLightDTOList) {
             if (calculUtil.isThisPersonAnAdult(personLightDTO, medicalRecordList)) {
                 numberOfAdult += 1;
+                log.debug("As of now, the number of Adults is {}", numberOfAdult);
             } else {
                 numberOfChild += 1;
+                log.debug("As of now, the number of Children is {}", numberOfChild);
             }
         }
+        log.debug("Creating and returning PeopleCoveredByFireStationDTO, instantiated by " +
+                "personLightDTOList, numberOfAdult, numberOfChild");
         return new PeopleCoveredByFireStationDTO(personLightDTOList, numberOfAdult, numberOfChild);
     }
 
     public List<ChildDTO> findChildAtAddress(String address) {
         List<Person> peopleAtAddress = new ArrayList<>();
-        List<Person> peopleAtAddressThatAreChild = new ArrayList<>();
-        List<ChildDTO> childDTOS = new ArrayList<>();
+        List<Person> personAtAddressMinusTheChild = new ArrayList<>();
+        List<ChildDTO> childDTOSList = new ArrayList<>();
 
         for (Person person : personList) {
-            if (person.getAddress().equals(address)) {
+            if (person.getAddress().equals(address)) { //TODO Yoda writing or Objects.equals();
                 peopleAtAddress.add(person);
+                log.debug("Adding {} {} to the list of filtered Person, the filter is the address {}",
+                        person.getFirstName(),
+                        person.getLastName(),
+                        address);
             }
         }
 
+        //TODO Three embedded for loop, that's too much
         for (Person person : peopleAtAddress) {
             for (MedicalRecord medicalRecord : medicalRecordList) {
                 if (person.getFirstName().equals(medicalRecord.getFirstName())
@@ -90,22 +104,26 @@ public class GeneralPurposeService {
                     childDTO.setFirstName(person.getFirstName());
                     childDTO.setLastName(person.getLastName());
                     childDTO.setAge(calculUtil.calulateAge(person, medicalRecord));
-                    List<Person> personAtAddressMinusTheChild = new ArrayList<>();
+                    log.debug("Creating a ChildDTO with {} {}", person.getFirstName(), person.getLastName());
+
                     for (Person person2 : peopleAtAddress) {
                         if (person2.getFirstName().equals(person.getFirstName()) && person2.getLastName().equals(person.getLastName())) {
                             continue;
                         } else {
                             personAtAddressMinusTheChild.add(person2);
+                            log.debug("Adding {} {} to the list of person that are not children, but living at the address {}",
+                                    person2.getFirstName(), person2.getLastName(), address);
                         }
                     }
                     childDTO.setOtherFamilyMember(personAtAddressMinusTheChild);
-                    childDTOS.add(childDTO);
+                    childDTOSList.add(childDTO);
+                    log.debug("adding the childDTO {} {} to the list to be returned as well as the other family member",
+                            childDTO.getFirstName(),
+                            childDTO.getLastName());
                 }
             }
         }
-
-
-    return childDTOS;
+    return childDTOSList;
     }
 
     public List<String> findPhoneNumbersCoveredByFireStation(String firestationNumber) {
@@ -113,8 +131,10 @@ public class GeneralPurposeService {
         List<String> phoneNumbers = new ArrayList<>();
 
         for (FireStation fireStation : fireStationList) {
-            if (fireStation.getStation().equals(firestationNumber)) {
+            if (fireStation.getStation().equals(firestationNumber)) { //TODO Yoda writing or Objects.equals()
                 fireStationsAreNumber.add(fireStation);
+                log.debug("Adding {} station number {} to the list of filtered station, the filter is the number {}",
+                        fireStation.getAddress(), fireStation.getStation(), firestationNumber);
             }
         }
 
@@ -122,6 +142,8 @@ public class GeneralPurposeService {
             for (Person person : personList) {
                 if (person.getAddress().equals(fireStation.getAddress())) {
                     phoneNumbers.add(person.getPhone());
+                    log.debug("Adding the phoneNumber {} from the person {} {} to the return list because it matches the fire station address {}",
+                            person.getPhone(), person.getFirstName(), person.getLastName(), fireStation.getAddress());
                 }
             }
         }
@@ -134,13 +156,18 @@ public class GeneralPurposeService {
         List<InhabitantDTO> inhabitantDTOList = new ArrayList<>();
 
         for(Person person : personList) {
-            if (person.getAddress().equals(address)) {
+            if (person.getAddress().equals(address)) { //TODO Yoda writing or Objects.equals()
                 peopleLivingAtAddress.add(person);
+                log.debug("Adding {} {} to the list of filtered people, the filter is the address {}",
+                        person.getFirstName(),
+                        person.getLastName(),
+                        address);
             }
         }
         for (FireStation fireStation : fireStationList) {
             if (fireStation.getAddress().equals(address)) {
                 stationNumber = Integer.parseInt(fireStation.getStation());
+                log.debug("Setting the integer stationNumber to the value {}", stationNumber);
             }
         }
 
@@ -153,27 +180,32 @@ public class GeneralPurposeService {
             inhabitantDTO.setMedications(fetchMedication(person));
             inhabitantDTO.setAllergies(fetchAllergies(person));
             inhabitantDTOList.add(inhabitantDTO);
+            log.debug("Creating the inhabitantDTO {} {} and adding it to the list to be returned", person.getFirstName(), person.getLastName());
         }
 
         return new DetailListOfInhabitantsDTO(inhabitantDTOList, stationNumber);
 
     }
     private List<String> fetchMedication(Person person) {
-        List<String> result = null;
+        List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
+        log.debug("Fetching the List<Medication> for {} {}", person.getFirstName(), person.getLastName());
         for (MedicalRecord medicalRecord : medicalRecordList) {
             if (medicalRecord.getFirstName().equals(person.getFirstName())
                     && medicalRecord.getLastName().equals(person.getLastName())) {
                 result = medicalRecord.getMedications();
+                log.debug("Setting the List<Medication> {}", result);
             }
         }
         return result;
     }
     private List<String> fetchAllergies(Person person) {
-        List<String> result = null;
+        List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
+        log.debug("Fetching the List<Allergies> for {} {}", person.getFirstName(), person.getLastName());
         for (MedicalRecord medicalRecord : medicalRecordList) {
             if (medicalRecord.getFirstName().equals(person.getFirstName())
                     && medicalRecord.getLastName().equals(person.getLastName())) {
                 result = medicalRecord.getAllergies();
+                log.debug("Setting the List<Allergies> {}", result);
             }
         }
         return result;

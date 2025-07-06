@@ -1,14 +1,15 @@
 package com.safetynet.api.controller;
 
-import com.safetynet.api.service.FireStationService;
-import com.safetynet.api.service.GeneralPurposeService;
+import com.safetynet.api.model.MedicalRecord;
 import com.safetynet.api.service.MedicalRecordService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import java.util.List;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,8 +25,14 @@ public class MedicalRecordControllerTest {
 
     @Test
     public void testGetMedicalRecord() throws Exception {
+        //Arrange
+        MedicalRecord medicalRecord = new MedicalRecord("John", "Doe", "03/06/1984",
+                List.of("Ibuprofen"), List.of("cacahuete"));
+        when(medicalRecordService.testMethodMedicalRecord()).thenReturn(medicalRecord);
+        //Act & Assert
         mockMvc.perform(get("/medicalRecord"))
                 .andExpect(status().isOk());
+        verify(medicalRecordService, times(1)).testMethodMedicalRecord();
     }
 
     @Test

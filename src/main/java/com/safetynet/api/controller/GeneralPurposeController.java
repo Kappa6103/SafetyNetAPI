@@ -2,6 +2,7 @@ package com.safetynet.api.controller;
 
 import com.safetynet.api.model.DTO.ChildDTO;
 import com.safetynet.api.model.DTO.DetailListOfInhabitantsDTO;
+import com.safetynet.api.model.DTO.DwellingDTO;
 import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
 import com.safetynet.api.service.GeneralPurposeService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,4 +50,11 @@ public class GeneralPurposeController {
         return generalPurposeService.getDetailListOfInhabitants(address);
     }
 
+    @GetMapping(value = "/flood/stations", params = "stations")
+    public List<DwellingDTO> DetailListOfDwellingCoveredByFireStation(
+            @RequestParam(value = "stations") List<String> stations) {
+        log.info("GeneralPurposeController reached. Fetching the detailed list of Dwelling covered by the stations {}",
+                stations);
+        return generalPurposeService.getDetailListOfDwelling(stations);
+    }
 }

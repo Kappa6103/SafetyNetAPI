@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -209,5 +210,57 @@ public class GeneralPurposeService {
             }
         }
         return result;
+    }
+
+    public List<DwellingDTO> getDetailListOfDwelling(List<String> stations) {
+        List<FireStation> fireStationsChoosen = new ArrayList<>();
+        List<Person> personsCoveredByStations = new ArrayList<>();
+        List<DwellingDTO> dwellingDTOList = new ArrayList<>();
+
+        for (String stationNumber : stations) {
+            for (FireStation fireStation : fireStationList) {
+                if (Objects.equals(stationNumber, fireStation.getStation())) {
+                    fireStationsChoosen.add(fireStation);
+                    log.debug("Adding the {} to the list of choosen fire stations", fireStation);
+                }
+            }
+        }
+
+        for (FireStation fireStation : fireStationsChoosen) {
+            for (Person person : personList) {
+                if (Objects.equals(fireStation.getAddress(), person.getAddress())) {
+                    personsCoveredByStations.add(person);
+                    log.debug("Adding the person {} {} living at {} to the list of personsCoveredByStations because " +
+                                    "they have the same address as the station {}",
+                            person.getFirstName(),
+                            person.getLastName(),
+                            person.getAddress(),
+                            fireStation.getAddress());
+                }
+            }
+        }
+
+        //Building the DwellingDTO
+        for (Person person : personsCoveredByStations) {
+            StringBuilder nameMedicationAllergies = new StringBuilder();
+            nameMedicationAllergies
+                    .append(person.getFirstName())
+                    .append(" ")
+                    .append(person.getLastName())
+                    .append(" ")
+                    .append(fetchMedication(person))
+                    .append(" ")
+                    .append(fetchAllergies(person));
+            DwellingDTO dwellingDTO = new DwellingDTO(
+                    nameMedicationAllergies.toString(),
+                    person.getPhone(),
+                    calculUtil.calulateAge(person, medicalRecordList));
+            dwellingDTOList.add(dwellingDTO);
+            log.debug("Creating a DwellingDTO with the person {} {} and adding it to the list to be returned",
+                    person.getFirstName(),
+                    person.getLastName());
+        }
+
+        return dwellingDTOList;
     }
 }

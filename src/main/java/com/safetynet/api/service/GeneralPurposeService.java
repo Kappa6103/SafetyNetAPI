@@ -187,6 +187,7 @@ public class GeneralPurposeService {
         return new DetailListOfInhabitantsDTO(inhabitantDTOList, stationNumber);
 
     }
+    //TODO move in util package
     private List<String> fetchMedication(Person person) {
         List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
         log.debug("Fetching the List<Medication> for {} {}", person.getFirstName(), person.getLastName());
@@ -199,6 +200,7 @@ public class GeneralPurposeService {
         }
         return result;
     }
+    //TODO move in util package
     private List<String> fetchAllergies(Person person) {
         List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
         log.debug("Fetching the List<Allergies> for {} {}", person.getFirstName(), person.getLastName());
@@ -212,16 +214,19 @@ public class GeneralPurposeService {
         return result;
     }
 
+    //TODO let's not repeat the address that much, let's make a payloadDTO that wrap a List<DwellingDTO> and the add a Address on top
     public List<DwellingDTO> getDetailListOfDwelling(List<String> stations) {
         List<FireStation> fireStationsChoosen = new ArrayList<>();
         List<Person> personsCoveredByStations = new ArrayList<>();
         List<DwellingDTO> dwellingDTOList = new ArrayList<>();
+        List<PersonForDwellingDTO> personForDwellingDTOList = new ArrayList<>();
+        DwellingDTO dwellingDTO = new DwellingDTO();
 
         for (String stationNumber : stations) {
             for (FireStation fireStation : fireStationList) {
                 if (Objects.equals(stationNumber, fireStation.getStation())) {
                     fireStationsChoosen.add(fireStation);
-                    log.debug("Adding the {} to the list of choosen fire stations", fireStation);
+                    log.debug("Adding the {} to the list of chosen fire stations", fireStation);
                 }
             }
         }
@@ -241,8 +246,16 @@ public class GeneralPurposeService {
         }
 
         //Building the DwellingDTO
-        for (Person person : personsCoveredByStations) {
+        log.debug("Starting to loop through the personsCovered by Stations");
+        int sizeOfPersonsCoveredByStations = personsCoveredByStations.size();
+        for (int i = 0; i < sizeOfPersonsCoveredByStations; i++) {
+
+            Person person = personsCoveredByStations.get(i);
+
+            log.debug("Looking at the person {} {}", person.getFirstName(), person.getLastName());
+
             StringBuilder nameMedicationAllergies = new StringBuilder();
+            log.debug("Building the String with the names and medical record");
             nameMedicationAllergies
                     .append(person.getFirstName())
                     .append(" ")
@@ -251,16 +264,80 @@ public class GeneralPurposeService {
                     .append(fetchMedication(person))
                     .append(" ")
                     .append(fetchAllergies(person));
-            DwellingDTO dwellingDTO = new DwellingDTO(
+
+
+            PersonForDwellingDTO personForDwellingDTO = new PersonForDwellingDTO(
                     nameMedicationAllergies.toString(),
                     person.getPhone(),
                     calculUtil.calulateAge(person, medicalRecordList));
-            dwellingDTOList.add(dwellingDTO);
+            log.debug("Constructing a new object PersonForDwellingDTO with the string, phone number and age " +
+                    "of the person");
+
+            if (i == 0) {
+
+                log.debug("populating the personForDwellinDTOList with its first person");
+
+                personForDwellingDTOList.add(personForDwellingDTO);
+
+                log.debug("adding this personForDwellingDTO to the list personForDwellingDTOList the list " +
+                        "should contain only person from the same address");
+
+            } else {
+
+                if (Objects.equals(personsCoveredByStations.get(i - 1).getAddress(), person.getAddress())) {
+
+                    personForDwellingDTOList.add(personForDwellingDTO);
+
+
+                } else {
+                    log.debug("If the person address is different than the last person, let's do that :");
+
+                    log.debug("Create a new dwellingDTO with the list of person and the address linking them");
+                    dwellingDTO.setPersonForDwellingDTOList(personForDwellingDTOList);
+                    dwellingDTO.setAddress(personsCoveredByStations.get(i - 1).getAddress());
+                    log.debug("and adding this dwellingDTO object to the dwellingDTOList to be returned");
+                    dwellingDTOList.add(dwellingDTO);
+
+                    log.debug("then, we want to clear the personForDwellingDTOList because we are starting a new house");
+                    personForDwellingDTOList = new ArrayList<>();
+                    log.debug("same for the dwellingDTO");
+                    dwellingDTO = new DwellingDTO();
+
+                    // but need to add that person too !
+                    personForDwellingDTOList.add(personForDwellingDTO);
+
+                }
+
+            }
+
             log.debug("Creating a DwellingDTO with the person {} {} and adding it to the list to be returned",
                     person.getFirstName(),
                     person.getLastName());
         }
-
         return dwellingDTOList;
+    }
+
+    public List<PersonInfoLastNameDTO> getPersonInfoByLastName(String lastName) {
+        List<Person> personSelected = new ArrayList<>();
+        List<PersonInfoLastNameDTO> personInfoLastNameDTOList = new ArrayList<>();
+
+        for (Person person : personList) {
+            if (Objects.equals(person.getLastName(), lastName)) {
+                personSelected.add(person);
+            }
+        }
+
+        for (Person person : personSelected) {
+            PersonInfoLastNameDTO personInfoLastNameDTO = new PersonInfoLastNameDTO();
+            personInfoLastNameDTO.setFirstName(person.getFirstName());
+            personInfoLastNameDTO.setLastName(person.getLastName());
+            personInfoLastNameDTO.setAddress(person.getAddress());
+            personInfoLastNameDTO.setAge(calculUtil.calulateAge(person, medicalRecordList));
+            personInfoLastNameDTO.setEmail(person.getEmail());
+            personInfoLastNameDTO.setMedications(fetchMedication(person));
+            personInfoLastNameDTO.setAllergies(fetchAllergies(person));
+            personInfoLastNameDTOList.add(personInfoLastNameDTO);
+        }
+        return personInfoLastNameDTOList;
     }
 }

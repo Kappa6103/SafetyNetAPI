@@ -8,7 +8,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class DetailListOfInhabitantsDTO {
+
     List<InhabitantDTO> listOfInhabitant;
+
     int fireStation;
 
 }

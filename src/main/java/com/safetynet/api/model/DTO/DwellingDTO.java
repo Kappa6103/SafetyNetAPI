@@ -1,16 +1,14 @@
 package com.safetynet.api.model.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@AllArgsConstructor
+import java.util.List;
+
 @Data
 public class DwellingDTO {
 
-    String nameWithMedicationsAndAllergies;
+    String Address;
 
-    String phoneNumber;
-
-    int age;
+    List<PersonForDwellingDTO> personForDwellingDTOList;
 
 }

@@ -1,9 +1,6 @@
 package com.safetynet.api.controller;
 
-import com.safetynet.api.model.DTO.ChildDTO;
-import com.safetynet.api.model.DTO.DetailListOfInhabitantsDTO;
-import com.safetynet.api.model.DTO.DwellingDTO;
-import com.safetynet.api.model.DTO.PeopleCoveredByFireStationDTO;
+import com.safetynet.api.model.DTO.*;
 import com.safetynet.api.service.GeneralPurposeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +53,12 @@ public class GeneralPurposeController {
         log.info("GeneralPurposeController reached. Fetching the detailed list of Dwelling covered by the stations {}",
                 stations);
         return generalPurposeService.getDetailListOfDwelling(stations);
+    }
+
+    @GetMapping(value = "/personInfo", params = "lastName")
+    public List<PersonInfoLastNameDTO> PersonInfoLastNameDTO(
+            @RequestParam(value = "lastName") String lastName) {
+        log.info("GeneralPurposeController reached. Fetching the list of people sharing the same last name {}", lastName);
+        return generalPurposeService.getPersonInfoByLastName(lastName);
     }
 }

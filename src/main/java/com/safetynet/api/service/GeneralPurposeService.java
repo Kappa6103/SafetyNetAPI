@@ -7,13 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 @Slf4j
 @Service
 public class GeneralPurposeService {
+
+    private static final int AGE_OF_A_CHILD = 18;
 
     @Autowired
     CalculUtil calculUtil;
@@ -79,13 +80,13 @@ public class GeneralPurposeService {
         return new PeopleCoveredByFireStationDTO(personLightDTOList, numberOfAdult, numberOfChild);
     }
 
-    public List<ChildDTO> findChildAtAddress(String address) {
+    public ChildAtAddressDTO findChildAtAddress(String address) {
         List<Person> peopleAtAddress = new ArrayList<>();
-        List<Person> personAtAddressMinusTheChild = new ArrayList<>();
-        List<ChildDTO> childDTOSList = new ArrayList<>();
+        List<ChildDTO> listOfChild = new ArrayList<>();
+        List<Person> listOfAdult = new ArrayList<>();
 
         for (Person person : personList) {
-            if (person.getAddress().equals(address)) { //TODO Yoda writing or Objects.equals();
+            if (Objects.equals(person.getAddress(), address)) {
                 peopleAtAddress.add(person);
                 log.debug("Adding {} {} to the list of filtered Person, the filter is the address {}",
                         person.getFirstName(),
@@ -94,37 +95,33 @@ public class GeneralPurposeService {
             }
         }
 
-        //TODO Three embedded for loop, that's too much
         for (Person person : peopleAtAddress) {
-            for (MedicalRecord medicalRecord : medicalRecordList) {
-                if (person.getFirstName().equals(medicalRecord.getFirstName())
-                        && person.getLastName().equals(medicalRecord.getLastName())
-                        && calculUtil.isThisPersonAChild(person, medicalRecord)
-                ) {
-                    ChildDTO childDTO = new ChildDTO();
-                    childDTO.setFirstName(person.getFirstName());
-                    childDTO.setLastName(person.getLastName());
-                    childDTO.setAge(calculUtil.calulateAge(person, medicalRecord));
-                    log.debug("Creating a ChildDTO with {} {}", person.getFirstName(), person.getLastName());
+            int ageOfThePerson = calculUtil.calulateAge(person, medicalRecordList);
+            if (ageOfThePerson <= AGE_OF_A_CHILD) {
 
-                    for (Person person2 : peopleAtAddress) {
-                        if (person2.getFirstName().equals(person.getFirstName()) && person2.getLastName().equals(person.getLastName())) {
-                            continue;
-                        } else {
-                            personAtAddressMinusTheChild.add(person2);
-                            log.debug("Adding {} {} to the list of person that are not children, but living at the address {}",
-                                    person2.getFirstName(), person2.getLastName(), address);
-                        }
-                    }
-                    childDTO.setOtherFamilyMember(personAtAddressMinusTheChild);
-                    childDTOSList.add(childDTO);
-                    log.debug("adding the childDTO {} {} to the list to be returned as well as the other family member",
-                            childDTO.getFirstName(),
-                            childDTO.getLastName());
-                }
+                ChildDTO childDTO = new ChildDTO();
+                childDTO.setFirstName(person.getFirstName());
+                childDTO.setLastName(person.getLastName());
+                childDTO.setAge(ageOfThePerson);
+                log.debug("Creating a ChildDTO with {} {}", person.getFirstName(), person.getLastName());
+
+                listOfChild.add(childDTO);
+                log.debug("Adding the ChildDTO to the list of child");
+            } else {
+                listOfAdult.add(person);
+                log.debug("Adding the person {} {} of age {} to the list of adutls",
+                        person.getFirstName(),
+                        person.getLastName(),
+                        ageOfThePerson);
             }
         }
-    return childDTOSList;
+
+        if (listOfChild.isEmpty()) {
+            listOfAdult.clear();
+            log.debug("There is not kids in the house, so clearing all entries in the adult list");
+        }
+
+    return new ChildAtAddressDTO(listOfChild, listOfAdult);
     }
 
     public List<String> findPhoneNumbersCoveredByFireStation(String firestationNumber) {
@@ -190,12 +187,12 @@ public class GeneralPurposeService {
     //TODO move in util package
     private List<String> fetchMedication(Person person) {
         List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
-        log.debug("Fetching the List<Medication> for {} {}", person.getFirstName(), person.getLastName());
+        log.debug("Fetching the List<Medication> of {} {}", person.getFirstName(), person.getLastName());
         for (MedicalRecord medicalRecord : medicalRecordList) {
             if (medicalRecord.getFirstName().equals(person.getFirstName())
                     && medicalRecord.getLastName().equals(person.getLastName())) {
                 result = medicalRecord.getMedications();
-                log.debug("Setting the List<Medication> {}", result);
+                log.debug("Returning the List<Medication> {}", result);
             }
         }
         return result;
@@ -203,12 +200,12 @@ public class GeneralPurposeService {
     //TODO move in util package
     private List<String> fetchAllergies(Person person) {
         List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
-        log.debug("Fetching the List<Allergies> for {} {}", person.getFirstName(), person.getLastName());
+        log.debug("Fetching the List<Allergies> of {} {}", person.getFirstName(), person.getLastName());
         for (MedicalRecord medicalRecord : medicalRecordList) {
             if (medicalRecord.getFirstName().equals(person.getFirstName())
                     && medicalRecord.getLastName().equals(person.getLastName())) {
                 result = medicalRecord.getAllergies();
-                log.debug("Setting the List<Allergies> {}", result);
+                log.debug("Returning the List<Allergies> {}", result);
             }
         }
         return result;
@@ -236,7 +233,7 @@ public class GeneralPurposeService {
                 if (Objects.equals(fireStation.getAddress(), person.getAddress())) {
                     personsCoveredByStations.add(person);
                     log.debug("Adding the person {} {} living at {} to the list of personsCoveredByStations because " +
-                                    "they have the same address as the station {}",
+                                    "they have the same address as the fire station {}",
                             person.getFirstName(),
                             person.getLastName(),
                             person.getAddress(),
@@ -245,17 +242,14 @@ public class GeneralPurposeService {
             }
         }
 
-        //Building the DwellingDTO
-        log.debug("Starting to loop through the personsCovered by Stations");
         int sizeOfPersonsCoveredByStations = personsCoveredByStations.size();
         for (int i = 0; i < sizeOfPersonsCoveredByStations; i++) {
 
             Person person = personsCoveredByStations.get(i);
 
-            log.debug("Looking at the person {} {}", person.getFirstName(), person.getLastName());
-
             StringBuilder nameMedicationAllergies = new StringBuilder();
-            log.debug("Building the String with the names and medical record");
+            log.debug("Building the String with the names and medical record for the person {} {}",
+                    person.getFirstName(), person.getLastName());
             nameMedicationAllergies
                     .append(person.getFirstName())
                     .append(" ")
@@ -271,48 +265,46 @@ public class GeneralPurposeService {
                     person.getPhone(),
                     calculUtil.calulateAge(person, medicalRecordList));
             log.debug("Constructing a new object PersonForDwellingDTO with the string, phone number and age " +
-                    "of the person");
+                    "of the person {} {}", person.getFirstName(), person.getLastName());
 
             if (i == 0) {
 
                 log.debug("populating the personForDwellinDTOList with its first person");
-
                 personForDwellingDTOList.add(personForDwellingDTO);
-
-                log.debug("adding this personForDwellingDTO to the list personForDwellingDTOList the list " +
-                        "should contain only person from the same address");
 
             } else {
 
                 if (Objects.equals(personsCoveredByStations.get(i - 1).getAddress(), person.getAddress())) {
 
                     personForDwellingDTOList.add(personForDwellingDTO);
-
+                    log.debug("The person {} {} live at the same address as the previous person on the list" +
+                            "we therefor add this person to the personForDwellingDTOList", person.getFirstName(),
+                            person.getLastName());
 
                 } else {
-                    log.debug("If the person address is different than the last person, let's do that :");
+                    log.debug("The person {} {} doesn't live at the same address as the previous person on the list",
+                            person.getFirstName(), person.getLastName());
 
-                    log.debug("Create a new dwellingDTO with the list of person and the address linking them");
                     dwellingDTO.setPersonForDwellingDTOList(personForDwellingDTOList);
+                    log.debug("Loading the dwellingDTO with the existing personForDwellingDTOList");
+
                     dwellingDTO.setAddress(personsCoveredByStations.get(i - 1).getAddress());
-                    log.debug("and adding this dwellingDTO object to the dwellingDTOList to be returned");
+                    log.debug("and setting its address");
+
                     dwellingDTOList.add(dwellingDTO);
+                    log.debug("and adding this dwellingDTO the list of DTO to be returned");
 
-                    log.debug("then, we want to clear the personForDwellingDTOList because we are starting a new house");
                     personForDwellingDTOList = new ArrayList<>();
-                    log.debug("same for the dwellingDTO");
+                    log.debug("Then we clear the personForDwellingDTOList");
+
                     dwellingDTO = new DwellingDTO();
+                    log.debug("And we clear the dwellingDTO");
 
-                    // but need to add that person too !
                     personForDwellingDTOList.add(personForDwellingDTO);
-
+                    log.debug("And then add the current person {} {} to the personForDwellingDTOList to start the loop" +
+                            " again", person.getFirstName(), person.getLastName());
                 }
-
             }
-
-            log.debug("Creating a DwellingDTO with the person {} {} and adding it to the list to be returned",
-                    person.getFirstName(),
-                    person.getLastName());
         }
         return dwellingDTOList;
     }
@@ -324,6 +316,8 @@ public class GeneralPurposeService {
         for (Person person : personList) {
             if (Objects.equals(person.getLastName(), lastName)) {
                 personSelected.add(person);
+                log.debug("Adding the person {} {} to the list of person selected because they have the last name {}",
+                        person.getFirstName(), person.getLastName(), lastName);
             }
         }
 
@@ -337,7 +331,30 @@ public class GeneralPurposeService {
             personInfoLastNameDTO.setMedications(fetchMedication(person));
             personInfoLastNameDTO.setAllergies(fetchAllergies(person));
             personInfoLastNameDTOList.add(personInfoLastNameDTO);
+            log.debug("Creating PersonInfoLastNameDTO for {} {} and adding it to the list to be returned",
+                    person.getFirstName(),
+                    person.getLastName());
         }
         return personInfoLastNameDTOList;
+    }
+
+    public EmailListOfCityInhabitants getEmailsOfInhabitants(String city) {
+        EmailListOfCityInhabitants emailListOfCityInhabitants = new EmailListOfCityInhabitants();
+        List<String> emailList = new ArrayList<>();
+
+
+        for (Person person : personList) {
+            if (Objects.equals(person.getCity(), city)) {
+                emailList.add(person.getEmail());
+                log.info("Adding the email {} of {} {} to the list because the person's city matches the requirement: " +
+                        "{}",
+                        person.getEmail(), person.getFirstName(), person.getLastName(), city);
+            }
+        }
+
+        emailListOfCityInhabitants.setEmails(emailList);
+        log.info("Setting the DTO with the list of emails");
+
+        return emailListOfCityInhabitants;
     }
 }

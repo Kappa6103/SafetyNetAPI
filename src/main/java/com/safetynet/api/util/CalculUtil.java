@@ -88,7 +88,7 @@ public class CalculUtil {
         LocalDate dateOfBirth = null;
         Period period = null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        //better to do a fori loop with a break ?
+
         for (MedicalRecord medicalRecord : medicalRecordList) {
             if (person.getFirstName().equals(medicalRecord.getFirstName()) && person.getLastName().equals(medicalRecord.getLastName())) {
                 try {
@@ -102,7 +102,12 @@ public class CalculUtil {
             period = Period.between(dateOfBirth, nowTime);
 
         }
-        return period.getYears();
+
+        if (period != null) {
+            return period.getYears();
+        } else {
+            return -1;
+        }
     }
 
 }

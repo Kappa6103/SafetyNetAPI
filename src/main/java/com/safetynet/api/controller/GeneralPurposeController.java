@@ -25,7 +25,7 @@ public class GeneralPurposeController {
     }
 
     @GetMapping(value = "/childAlert", params = "address")
-    public List<ChildDTO> childAtAddress(@RequestParam(value = "address") String address) {
+    public ChildAtAddressDTO childAtAddress(@RequestParam(value = "address") String address) {
         log.info("GeneralPurposeController reached. Fetching all the kids at address {}", address);
         return generalPurposeService.findChildAtAddress(address);
     }
@@ -56,9 +56,15 @@ public class GeneralPurposeController {
     }
 
     @GetMapping(value = "/personInfo", params = "lastName")
-    public List<PersonInfoLastNameDTO> PersonInfoLastNameDTO(
+    public List<PersonInfoLastNameDTO> personInfoLastNameDTO(
             @RequestParam(value = "lastName") String lastName) {
         log.info("GeneralPurposeController reached. Fetching the list of people sharing the same last name {}", lastName);
         return generalPurposeService.getPersonInfoByLastName(lastName);
+    }
+
+    @GetMapping(value = "/communityEmail", params = "city")
+    public EmailListOfCityInhabitants fetchingAllEmailsOfInhabitants(@RequestParam(value = "city") String city) {
+        log.info("GeneralPurposeController reached. Fetching all the emails of the city inhabitants");
+        return generalPurposeService.getEmailsOfInhabitants(city);
     }
 }

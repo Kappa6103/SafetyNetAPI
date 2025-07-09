@@ -1,13 +1,14 @@
 package com.safetynet.api.controller;
 
+import com.safetynet.api.model.FireStation;
 import com.safetynet.api.service.FireStationService;
-import com.safetynet.api.service.GeneralPurposeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,8 +24,13 @@ public class FireStationControllerTest {
 
     @Test
     public void testGetFireStation() throws Exception {
+        //Arrange
+        FireStation fireStation = new FireStation("12 rue des lilas, Paris", "2");
+        when(fireStationService.testMethodFireStation()).thenReturn(fireStation);
+        //Act & Assert
         mockMvc.perform(get("/firestation"))
                 .andExpect(status().isOk());
+        verify(fireStationService, times(1)).testMethodFireStation();
     }
 
     @Test

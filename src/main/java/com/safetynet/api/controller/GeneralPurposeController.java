@@ -48,7 +48,7 @@ public class GeneralPurposeController {
     }
 
     @GetMapping(value = "/flood/stations", params = "stations")
-    public List<DwellingDTO> DetailListOfDwellingCoveredByFireStation(
+    public List<DwellingDTO> detailListOfDwellingCoveredByFireStation(
             @RequestParam(value = "stations") List<String> stations) {
         log.info("GeneralPurposeController reached. Fetching the detailed list of Dwelling covered by the stations {}",
                 stations);

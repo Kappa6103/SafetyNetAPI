@@ -20,7 +20,7 @@ public class FireStationController {
         FireStation fireStation = fireStationService.testMethodFireStation();
         log.info("@GetMapping reached in the PersonController. Getting the last fire station in the list: {} {}",
                 fireStation.getAddress(), fireStation.getStation());
-        return fireStationService.testMethodFireStation();
+        return fireStation;
     }
 
     @PostMapping

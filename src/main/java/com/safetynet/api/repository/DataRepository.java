@@ -19,12 +19,16 @@ import java.util.List;
 @Slf4j
 @Repository
 public class DataRepository {
-
-    ObjectMapper objectMapper = new ObjectMapper();
+    //TODO field injection of constructor injection
+    ObjectMapper objectMapper;
 
     DataWrapper dataWrapper;
 
-    String filePath = "src/main/resources/data.json";
+    private final String filePath = "src/main/resources/data.json";
+
+    public DataRepository(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @PostConstruct
     private void init() {

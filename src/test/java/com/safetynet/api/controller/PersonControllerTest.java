@@ -1,8 +1,10 @@
 package com.safetynet.api.controller;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.safetynet.api.model.Person;
 import com.safetynet.api.service.GeneralPurposeService;
 import com.safetynet.api.service.PersonService;
 import org.junit.jupiter.api.Test;
@@ -23,8 +25,14 @@ public class PersonControllerTest {
 
     @Test
     public void testGetPerson() throws Exception {
+        //Arrange
+        Person person = new Person("John", "Doe", "Somewhere", "OverTheRainbow",
+                "67000", "09090909", "johndoe@gmail.com");
+        when(personService.testMethodPerson()).thenReturn(person);
+        //Act & Assert
         mockMvc.perform(get("/person"))
                 .andExpect(status().isOk());
+        verify(personService, times(1)).testMethodPerson();
     }
 
     @Test

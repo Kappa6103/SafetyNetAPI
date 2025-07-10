@@ -25,7 +25,6 @@ public class FireStationService {
     }
 
     public void addFireStation(String address, String station) {
-
         FireStation fireStation = new FireStation(address, station);
         log.debug("FireStationService, addFireStation(), creating the fire station {} number {}", address, station);
         fireStationList.add(fireStation);
@@ -34,7 +33,6 @@ public class FireStationService {
         log.debug("FireStationService, addFireStation(), updating the fireStations list of the data wrapper");
     }
 
-    //TODO using a null safe .equals methode. is it working ?
     public void updateFireStation(String address, String station) {
         for (FireStation fireStation : fireStationList) {
             if (Objects.equals(fireStation.getAddress(), address)) {

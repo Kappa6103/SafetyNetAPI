@@ -55,7 +55,6 @@ public class MedicalRecordServiceTest {
     public void testAddMedicalRecord() {
         //Arrange
         int initialSize = medicalRecordList.size();
-
         //Act
         medicalRecordService.addMedicalRecord("testFirstName", "testLastName", "23/23/23",
                 List.of("doliprane"), List.of("peanuts"));

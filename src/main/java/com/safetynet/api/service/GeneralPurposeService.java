@@ -28,6 +28,33 @@ public class GeneralPurposeService {
     @Autowired
     private List<MedicalRecord> medicalRecordList;
 
+    //TODO move in util package
+    public List<String> fetchMedication(Person person) {
+        List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
+        log.debug("Fetching the List<Medication> of {} {}", person.getFirstName(), person.getLastName());
+        for (MedicalRecord medicalRecord : medicalRecordList) {
+            if (medicalRecord.getFirstName().equals(person.getFirstName())
+                    && medicalRecord.getLastName().equals(person.getLastName())) {
+                result = medicalRecord.getMedications();
+                log.debug("Returning the List<Medication> {}", result);
+            }
+        }
+        return result;
+    }
+    //TODO move in util package
+    public List<String> fetchAllergies(Person person) {
+        List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
+        log.debug("Fetching the List<Allergies> of {} {}", person.getFirstName(), person.getLastName());
+        for (MedicalRecord medicalRecord : medicalRecordList) {
+            if (medicalRecord.getFirstName().equals(person.getFirstName())
+                    && medicalRecord.getLastName().equals(person.getLastName())) {
+                result = medicalRecord.getAllergies();
+                log.debug("Returning the List<Allergies> {}", result);
+            }
+        }
+        return result;
+    }
+
     public PeopleCoveredByFireStationDTO findPeopleCoveredByFireStation(String station) {
 
         List<FireStation> stationsSelected = new ArrayList<>();
@@ -180,35 +207,8 @@ public class GeneralPurposeService {
             inhabitantDTOList.add(inhabitantDTO);
             log.debug("Creating the inhabitantDTO {} {} and adding it to the list to be returned", person.getFirstName(), person.getLastName());
         }
-
         return new DetailListOfInhabitantsDTO(inhabitantDTOList, stationNumber);
 
-    }
-    //TODO move in util package
-    private List<String> fetchMedication(Person person) {
-        List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
-        log.debug("Fetching the List<Medication> of {} {}", person.getFirstName(), person.getLastName());
-        for (MedicalRecord medicalRecord : medicalRecordList) {
-            if (medicalRecord.getFirstName().equals(person.getFirstName())
-                    && medicalRecord.getLastName().equals(person.getLastName())) {
-                result = medicalRecord.getMedications();
-                log.debug("Returning the List<Medication> {}", result);
-            }
-        }
-        return result;
-    }
-    //TODO move in util package
-    private List<String> fetchAllergies(Person person) {
-        List<String> result = new ArrayList<>(); //TODO Should it be better : Collections.emptyList()
-        log.debug("Fetching the List<Allergies> of {} {}", person.getFirstName(), person.getLastName());
-        for (MedicalRecord medicalRecord : medicalRecordList) {
-            if (medicalRecord.getFirstName().equals(person.getFirstName())
-                    && medicalRecord.getLastName().equals(person.getLastName())) {
-                result = medicalRecord.getAllergies();
-                log.debug("Returning the List<Allergies> {}", result);
-            }
-        }
-        return result;
     }
 
     //TODO let's not repeat the address that much, let's make a payloadDTO that wrap a List<DwellingDTO> and the add a Address on top
@@ -303,9 +303,21 @@ public class GeneralPurposeService {
                     personForDwellingDTOList.add(personForDwellingDTO);
                     log.debug("And then add the current person {} {} to the personForDwellingDTOList to start the loop" +
                             " again", person.getFirstName(), person.getLastName());
+                    if (i == sizeOfPersonsCoveredByStations - 1) {
+                        //last iteration have to save this person
+                        dwellingDTO.setPersonForDwellingDTOList(personForDwellingDTOList);
+                        log.debug("Loading the dwellingDTO with the existing personForDwellingDTOList");
+
+                        dwellingDTO.setAddress(personsCoveredByStations.get(i).getAddress());
+                        log.debug("and setting its address");
+
+                        dwellingDTOList.add(dwellingDTO);
+                        log.debug("and adding this dwellingDTO the list of DTO to be returned");
+                    }
                 }
             }
         }
+
         return dwellingDTOList;
     }
 

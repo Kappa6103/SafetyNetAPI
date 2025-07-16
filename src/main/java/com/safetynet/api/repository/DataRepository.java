@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @Repository
 public class DataRepository {
-    //TODO field injection of constructor injection
+
     ObjectMapper objectMapper;
 
     DataWrapper dataWrapper;
@@ -56,13 +56,16 @@ public class DataRepository {
 
     @Bean
     public DataWrapper getDataWrapper() {
-        try {
-            dataWrapper = objectMapper.readValue(new File(filePath), DataWrapper.class);
-            log.debug("Success when deserializing the json file. data wrapper could be instantiated, it is a Bean");
-        } catch (IOException e) {
-            log.error("Problem when deserializing the json file. dataWrapper could not be instantiated");
-            throw new RuntimeException(e);
+        if (dataWrapper == null) {
+            try {
+                dataWrapper = objectMapper.readValue(new File(filePath), DataWrapper.class);
+                log.debug("Success when deserializing the json file. data wrapper could be instantiated, it is a Bean");
+            } catch (IOException e) {
+                log.error("Problem when deserializing the json file. dataWrapper could not be instantiated");
+                throw new RuntimeException(e);
+            }
         }
+
         return dataWrapper;
     }
 

@@ -2,6 +2,7 @@ package com.safetynet.api.controller;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.api.model.Person;
@@ -36,6 +37,17 @@ public class PersonControllerTest {
     }
 
     @Test
+    public void testGetPerson_errorFetching() throws Exception {
+        //Arrange
+        when(personService.testMethodPerson()).thenReturn(null);
+        //Act & Assert
+        mockMvc.perform(get("/person"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("error fetching last person in the list"));
+        verify(personService, times(1)).testMethodPerson();
+    }
+
+    @Test
     public void testPostPerson() throws Exception {
         mockMvc.perform(post("/person")
                 .param("firstName", "John")
@@ -44,9 +56,21 @@ public class PersonControllerTest {
                 .param("city","OverTheRainbow")
                 .param("zip", "67000")
                 .param("phone", "029320932093")
-                .param("phone", "029320932093")
                 .param("email", "adsfasdf@gmail.com"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testPostPerson_argsMissing() throws Exception {
+        mockMvc.perform(post("/person")
+                        .param("firstName", "John")
+                        .param("lastName","Doe")
+                        .param("address", "Somewhere")
+                        .param("city","OverTheRainbow")
+                        .param("zip", "67000")
+                        .param("phone", "")
+                        .param("email", ""))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -64,10 +88,31 @@ public class PersonControllerTest {
     }
 
     @Test
+    public void testPutPerson_argsMissing() throws Exception {
+        mockMvc.perform(put("/person")
+                        .param("firstName", "John")
+                        .param("lastName","Doe")
+                        .param("address", "")
+                        .param("city","OverTheRainbow")
+                        .param("zip", "67000")
+                        .param("phone", "029320932093")
+                        .param("email", ""))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testDeletePerson() throws Exception {
         mockMvc.perform(delete("/person")
                         .param("firstName", "John")
                         .param("lastName","Doe"))
                         .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeletePerson_argMissing() throws Exception {
+        mockMvc.perform(delete("/person")
+                        .param("firstName", "")
+                        .param("lastName","Doe"))
+                .andExpect(status().isBadRequest());
     }
 }

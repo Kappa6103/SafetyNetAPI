@@ -8,8 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -34,11 +36,30 @@ public class FireStationControllerTest {
     }
 
     @Test
+    public void testGetFireStation_errorFetching() throws Exception {
+        //Arrange
+        when(fireStationService.testMethodFireStation()).thenReturn(null);
+        //Act & Assert
+        mockMvc.perform(get("/firestation"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("error fetching last fire station in the list"));
+        verify(fireStationService, times(1)).testMethodFireStation();
+    }
+
+    @Test
     public void testPostFireStation() throws Exception {
         mockMvc.perform(post("/firestation")
                 .param("address", "32 bld de la Victoire")
                 .param("station","78"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testPostFireStation_argMissing() throws Exception {
+        mockMvc.perform(post("/firestation")
+                        .param("address", "32 bld de la Victoire")
+                        .param("station",""))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -50,10 +71,26 @@ public class FireStationControllerTest {
     }
 
     @Test
+    public void testPutFireStation_argMissing() throws Exception {
+        mockMvc.perform(put("/firestation")
+                        .param("address", "32 bld de la Victoire")
+                        .param("station",""))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testDeleteFireStation() throws Exception {
         mockMvc.perform(delete("/firestation")
                         .param("address", "32 bld de la Victoire")
                         .param("station","78"))
                         .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteFireStation_argMissing() throws Exception {
+        mockMvc.perform(delete("/firestation")
+                        .param("address", "32 bld de la Victoire")
+                        .param("station",""))
+                .andExpect(status().isBadRequest());
     }
 }

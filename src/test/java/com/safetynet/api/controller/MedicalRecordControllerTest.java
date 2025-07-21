@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = MedicalRecordController.class)
@@ -35,6 +36,17 @@ public class MedicalRecordControllerTest {
     }
 
     @Test
+    public void testGetMedicalRecord_errorFetching() throws Exception {
+        //Arrange
+        when(medicalRecordService.testMethodMedicalRecord()).thenReturn(null);
+        //Act & Assert
+        mockMvc.perform(get("/medicalRecord"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("error fetching last medical record in the list"));
+        verify(medicalRecordService, times(1)).testMethodMedicalRecord();
+    }
+
+    @Test
     public void testPostMedicalRecord() throws Exception {
         mockMvc.perform(post("/medicalRecord")
                 .param("firstName", "John")
@@ -43,6 +55,17 @@ public class MedicalRecordControllerTest {
                 .param("medications","OverTheRainbow", "UnderTheRainbow")
                 .param("allergies", "peanuts", "shellfish"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testPostMedicalRecord_argsMissing() throws Exception {
+        mockMvc.perform(post("/medicalRecord")
+                        .param("firstName", "John")
+                        .param("lastName","Doe")
+                        .param("birthday", "23/23/23")
+                        .param("medications","")
+                        .param("allergies", ""))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -57,10 +80,29 @@ public class MedicalRecordControllerTest {
     }
 
     @Test
+    public void testPutMedicalRecord_argsMissing() throws Exception {
+        mockMvc.perform(put("/medicalRecord")
+                        .param("firstName", "John")
+                        .param("lastName","")
+                        .param("birthday", "")
+                        .param("medications","OverTheRainbow", "UnderTheRainbow")
+                        .param("allergies", "peanuts", "shellfish"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testDeleteMedicalRecord() throws Exception {
         mockMvc.perform(delete("/medicalRecord")
                         .param("firstName", "John")
                         .param("lastName","Doe"))
                         .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteMedicalRecord_argMissing() throws Exception {
+        mockMvc.perform(delete("/medicalRecord")
+                        .param("firstName", "John")
+                        .param("lastName",""))
+                .andExpect(status().isBadRequest());
     }
 }

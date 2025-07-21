@@ -21,7 +21,7 @@ public class FireStationController {
 
     /**
      * Created to test the endpoint
-     * @return the last fire station of the list
+     * @return the last fire station in the list
      */
     @GetMapping
     public ResponseEntity<?> greeting() {
@@ -32,7 +32,7 @@ public class FireStationController {
                     fireStation.getAddress(), fireStation.getStation());
             return ResponseEntity.ok(fireStation);
         } else {
-            String errorMessage = "error fetching last fire station in list";
+            String errorMessage = "error fetching last fire station in the list";
             log.error(errorMessage);
             return ResponseEntity.badRequest().body(errorMessage);
         }
@@ -43,7 +43,7 @@ public class FireStationController {
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "station", required = false) String station
     ) {
-        if (StringUtils.hasText(address) && StringUtils.hasText(station)) {
+        if (isInputFilled(address, station)) {
             fireStationService.addFireStation(address, station);
             log.info("@PostMapping reached in the FireStationController. Adding the fire station {} number {} to the list",
                     address, station);
@@ -58,7 +58,7 @@ public class FireStationController {
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "station", required = false) String station
     ) {
-        if (StringUtils.hasText(address) && StringUtils.hasText(station)) {
+        if (isInputFilled(address, station)) {
             fireStationService.updateFireStation(address, station);
             log.info("@PutMapping reached in the FireStationController. Updating the fire station {} with it's new number {}",
                     address, station);
@@ -74,10 +74,10 @@ public class FireStationController {
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "station", required = false) String station
     ) {
-        if (StringUtils.hasText(address) && StringUtils.hasText(station)) {
+        if (isInputFilled(address, station)) {
             fireStationService.deleteStation(address, station);
             log.info("@DeleteMapping reached in the FireStationController. Deleting the fire station {} {}", address, station);
-            String message = String.format("deletion succesful, fireStation %s was deleted", address);
+            String message = String.format("deletion successful, fireStation %s was deleted", address);
             return ResponseEntity.ok().body(message);
         } else {
             return errorHandler();
@@ -90,6 +90,10 @@ public class FireStationController {
         return ResponseEntity
                 .badRequest()
                 .body(errorMessage);
+    }
+
+    private boolean isInputFilled(String address, String station) {
+        return StringUtils.hasText(address) && StringUtils.hasText(station);
     }
 
 }

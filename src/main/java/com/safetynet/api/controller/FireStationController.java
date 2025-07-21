@@ -19,47 +19,77 @@ public class FireStationController {
     @Autowired
     FireStationService fireStationService;
 
-    //TODO out of the exercise's scope
+    /**
+     * Created to test the endpoint
+     * @return the last fire station of the list
+     */
     @GetMapping
-    public FireStation greeting() {
+    public ResponseEntity<?> greeting() {
         FireStation fireStation = fireStationService.testMethodFireStation();
-        log.info("@GetMapping reached in the PersonController. Getting the last fire station in the list: {} {}",
-                fireStation.getAddress(), fireStation.getStation());
-        return fireStation;
+
+        if (fireStation != null) {
+            log.info("@GetMapping reached in the PersonController. Getting the last fire station in the list: {} {}",
+                    fireStation.getAddress(), fireStation.getStation());
+            return ResponseEntity.ok(fireStation);
+        } else {
+            String errorMessage = "error fetching last fire station in list";
+            log.error(errorMessage);
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
     }
 
     @PostMapping
-    public void addFireStation(
-            @RequestParam(value = "address") String address,
-            @RequestParam(value = "station") String station
+    public ResponseEntity<String> addFireStation(
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "station", required = false) String station
     ) {
         if (StringUtils.hasText(address) && StringUtils.hasText(station)) {
             fireStationService.addFireStation(address, station);
             log.info("@PostMapping reached in the FireStationController. Adding the fire station {} number {} to the list",
                     address, station);
-            ResponseEntity.ok("FireStation added successfully");
+            return ResponseEntity.ok("FireStation added successfully");
         } else {
-
+            return errorHandler();
         }
     }
 
     @PutMapping
-    public void updateFireStation(
-            @RequestParam(value = "address") String address,
-            @RequestParam(value = "station") String station
+    public ResponseEntity<String > updateFireStation(
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "station", required = false) String station
     ) {
-        fireStationService.updateFireStation(address, station);
-        log.info("@PutMapping reached in the FireStationController. Updating the fire station {} with it's new number {}",
-                address, station);
+        if (StringUtils.hasText(address) && StringUtils.hasText(station)) {
+            fireStationService.updateFireStation(address, station);
+            log.info("@PutMapping reached in the FireStationController. Updating the fire station {} with it's new number {}",
+                    address, station);
+            String message = String.format("Update successful, fireStation %s has the new number %s", address, station);
+            return ResponseEntity.ok(message);
+        } else {
+            return errorHandler();
+        }
     }
 
     @DeleteMapping
-    public void deleteFireStation(
-            @RequestParam(value = "address") String address,
-            @RequestParam(value = "station") String station
+    public ResponseEntity<String> deleteFireStation(
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "station", required = false) String station
     ) {
-        fireStationService.deleteStation(address, station);
-        log.info("@DeleteMapping reached in the FireStationController. Deleting the fire station {} {}", address, station);
+        if (StringUtils.hasText(address) && StringUtils.hasText(station)) {
+            fireStationService.deleteStation(address, station);
+            log.info("@DeleteMapping reached in the FireStationController. Deleting the fire station {} {}", address, station);
+            String message = String.format("deletion succesful, fireStation %s was deleted", address);
+            return ResponseEntity.ok().body(message);
+        } else {
+            return errorHandler();
+        }
+    }
+
+    private ResponseEntity<String> errorHandler() {
+        String errorMessage = "Both address and station must be filled";
+        log.error(errorMessage);
+        return ResponseEntity
+                .badRequest()
+                .body(errorMessage);
     }
 
 }

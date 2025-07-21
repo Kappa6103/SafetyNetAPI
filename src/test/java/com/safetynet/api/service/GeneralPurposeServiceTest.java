@@ -440,7 +440,7 @@ public class GeneralPurposeServiceTest {
         FireStation fireStation3 = new FireStation("22 rue des lilas", "3");
         FireStation fireStation4 = new FireStation("22 rue de Paris", "4");
 
-        //when(stations.iterator()).thenReturn(stations.iterator());
+
         when(fireStationList.iterator()).thenAnswer(invocation -> List.of(fireStation1, fireStation2, fireStation3, fireStation4).iterator());
         when(personList.iterator()).thenAnswer(invocation -> (List.of(adult1, adult2, child1, child2).iterator()));
         when(medicalRecordList.iterator()).thenAnswer(invocation -> List.of(adult1MedicalRecord, adult2MedicalRecord,

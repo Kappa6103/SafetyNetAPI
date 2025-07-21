@@ -7,6 +7,7 @@ import com.safetynet.api.model.Person;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 import java.io.File;
@@ -16,19 +17,22 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * This Class read the makeshift json database serialising its data into objects in the data wrapper class
+ * {@link com.safetynet.api.repository.DataWrapper}
+ * and when called, returns unique lists of different objects models.
+ * When the application is shutdown, the class write the changes made to the database.
+ */
 @Slf4j
 @Repository
 public class DataRepository {
 
+    @Autowired
     ObjectMapper objectMapper;
 
     DataWrapper dataWrapper;
 
     private final String filePath = "src/main/resources/data.json";
-
-    public DataRepository(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     @PostConstruct
     private void init() {

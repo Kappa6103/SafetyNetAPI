@@ -5,9 +5,11 @@ import com.safetynet.api.service.MedicalRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+/**
+ * This is the Rest controller for the endpoint "/medicalRecord" using its appropriate service class {@link com.safetynet.api.service.MedicalRecordService}
+ */
 @Slf4j
 @RestController
 @RequestMapping("/medicalRecord")

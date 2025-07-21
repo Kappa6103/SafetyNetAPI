@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
+/**
+ * This is the Rest controller dealing with parameterised urls using its appropriate service class
+ * {@link com.safetynet.api.service.GeneralPurposeService}
+ */
 @Slf4j
 @RestController
 public class GeneralPurposeController {

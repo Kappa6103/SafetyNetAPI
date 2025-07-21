@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service class dealing with parameterised urls
+ */
 @Slf4j
 @Service
 public class GeneralPurposeService {

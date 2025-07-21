@@ -1,0 +1,7 @@
+com.safetynet.api
+com.safetynet.api.controller
+com.safetynet.api.model
+com.safetynet.api.model.DTO
+com.safetynet.api.repository
+com.safetynet.api.service
+com.safetynet.api.util

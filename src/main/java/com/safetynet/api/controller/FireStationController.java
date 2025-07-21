@@ -4,8 +4,13 @@ import com.safetynet.api.model.FireStation;
 import com.safetynet.api.service.FireStationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * This is the Rest controller for the endpoint "/firestation" using its appropriate service class {@link com.safetynet.api.service.FireStationService}
+ */
 @Slf4j
 @RestController
 @RequestMapping("/firestation")
@@ -28,9 +33,14 @@ public class FireStationController {
             @RequestParam(value = "address") String address,
             @RequestParam(value = "station") String station
     ) {
-        fireStationService.addFireStation(address, station);
-        log.info("@PostMapping reached in the FireStationController. Adding the fire station {} number {} to the list",
-                address, station);
+        if (StringUtils.hasText(address) && StringUtils.hasText(station)) {
+            fireStationService.addFireStation(address, station);
+            log.info("@PostMapping reached in the FireStationController. Adding the fire station {} number {} to the list",
+                    address, station);
+            ResponseEntity.ok("FireStation added successfully");
+        } else {
+
+        }
     }
 
     @PutMapping

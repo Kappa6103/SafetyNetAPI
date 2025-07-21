@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-// GESTION DES INTERACTIONS ENTRE L'UTILISATEUR DE L'APPLICATION ET L'APPLICATION
+/**
+ * This is the Rest controller for the endpoint "/person" using its appropriate service class {@link com.safetynet.api.service.PersonService}
+ */
 @Slf4j
 @RestController
 @RequestMapping("/person")
@@ -15,7 +17,7 @@ public class PersonController {
     @Autowired
     PersonService personService;
 
-    //TODO c'est un methode test hors du scope du projet - to delete
+    //TODO c'est un methode test hors du scope du projet
     @GetMapping
     public Person greeting() {
         Person person = personService.testMethodPerson();

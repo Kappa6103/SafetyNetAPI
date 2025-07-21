@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service class for the endpoint "/firestation"
+ */
 @Slf4j
 @Service
 public class FireStationService {

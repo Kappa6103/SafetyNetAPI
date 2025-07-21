@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.safetynet.api"},{"l":"com.safetynet.api.controller"},{"l":"com.safetynet.api.model"},{"l":"com.safetynet.api.model.DTO"},{"l":"com.safetynet.api.repository"},{"l":"com.safetynet.api.service"},{"l":"com.safetynet.api.util"}];updateSearchResults();

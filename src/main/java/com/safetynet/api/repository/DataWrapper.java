@@ -5,9 +5,11 @@ import com.safetynet.api.model.FireStation;
 import com.safetynet.api.model.MedicalRecord;
 import com.safetynet.api.model.Person;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
 
+/**
+ * Wrapping data held in the json database
+ */
 @Slf4j
 public class DataWrapper {
 

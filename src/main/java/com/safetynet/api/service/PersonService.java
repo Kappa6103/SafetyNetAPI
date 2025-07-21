@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * Service class for the endpoint "/person"
+ */
 @Slf4j
 @Service
 public class PersonService {

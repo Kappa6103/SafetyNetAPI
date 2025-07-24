@@ -51,7 +51,7 @@ public class FireStationControllerTest {
         mockMvc.perform(post("/firestation")
                 .param("address", "32 bld de la Victoire")
                 .param("station","78"))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test

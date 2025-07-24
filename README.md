@@ -17,7 +17,7 @@ SafetyNet Alerts is a Java Spring Boot application designed to simulate an emerg
 ## ✅ Features
 
 - Manage people, fire stations, and medical records (CRUD)
-- Emergency-related endpoints for residents, children, phones, and medical info
+- Emergency-related endpoints for residents, children, and medical info
 - Request/response logging with different log levels
 - Follows MVC architecture and SOLID principles
 - Code coverage with JaCoCo ≥ 80%

@@ -4,6 +4,7 @@ import com.safetynet.api.model.FireStation;
 import com.safetynet.api.service.FireStationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,7 @@ public class FireStationController {
             fireStationService.addFireStation(address, station);
             log.info("@PostMapping reached in the FireStationController. Adding the fire station {} number {} to the list",
                     address, station);
-            return ResponseEntity.ok("FireStation added successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Fire Station created");
         } else {
             return errorHandler();
         }

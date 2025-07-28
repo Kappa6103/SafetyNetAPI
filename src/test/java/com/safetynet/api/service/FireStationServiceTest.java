@@ -58,6 +58,7 @@ public class FireStationServiceTest {
         assertEquals("2", fireStationList.getLast().getStation(), "The Station numbers should match");
 
         verify(dataWrapper, times(1)).setFireStations(fireStationList);
+
     }
 
     @Test

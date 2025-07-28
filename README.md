@@ -146,4 +146,4 @@ src/
 
 ## 📫 Contact
 
-For questions or suggestions, please contact the project maintainer or open an issue on GitHub.
+For questions or suggestions, please send me an email or open an issue on GitHub.
